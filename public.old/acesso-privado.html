@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acesso Privado - Grey's Anatomy</title>
+  <link rel="stylesheet" href="assets/acesso-privado.css">
+</head>
+
+<body>
+
+  <header>
+    <h1>Bem-vindo ao Portal dos Fãs de Grey's Anatomy!</h1>
+    <p>Aqui você pode ver os outros fãs e editar seus dados. Vamos lá! 🩺</p>
+  </header>
+
+  <div class="container">
+    <table>
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dados dos usuários serão carregados aqui -->
+      </tbody>
+    </table>
+
+    <a href="details.html">
+      <button class="editar">Ver Detalhes dos Episódios</button>
+    </a>
+
+    <!-- Botão para voltar à página principal -->
+    <a href="index.html">
+      <button id="backButton">Voltar à Página Principal</button>
+    </a>
+
+     
+  </div>
+
+  <script>
+    const tbody = document.querySelector('tbody')
+
+    async function fetchData() {
+      const resp = await fetch('/user', {
+        headers: { Authorization: localStorage.getItem("token") }
+      })
+
+      const data = await resp.json()
+
+      if (resp.status == 401) {
+        alert("Você não está logado")
+        window.location.href = '/'
+        return
+      }
+
+      if (!resp.ok) {
+        alert("Erro ao carregar dados!")
+        return
+      }
+
+      tbody.innerHTML = ''
+
+      data.forEach(({ id, name, email }) => {
+        const tr = document.createElement('tr')
+        tr.innerHTML = `
+          <td>${id}</td>
+          <td>${name}</td>
+          <td>${email}</td>
+          <td>
+            <button class="excluir">Excluir</button>
+            <button class="editar">Editar</button>
+          </td>
+        `
+        tbody.appendChild(tr)
+        
+        const btExcluir = tr.querySelector('button.excluir')
+        const btEditar = tr.querySelector('button.editar')
+        const token = localStorage.getItem('token');
+        btExcluir.addEventListener('click', async () => {
+          const resp = await fetch(`/user/${user.id}/${token}`, { method: 'DELETE' })
+          if(resp.status == 401){
+            alert("Voce nao tem permissão");
+            return
+          }
+          tr.remove()
+        })
+
+      })
+    }
+
+    fetchData()
+  </script>
+
+</body>
+
+</html>

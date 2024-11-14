@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Episódios e Personagens</title>
+    <link rel="stylesheet" href="assets/main.css">
+</head>
+
+<body>
+
+    <nav>
+        <ul>
+            <li><a href="acesso-privado.html">Acesso Privado</a></li>
+            <li><a href="cadastro-episodio.html">Cadastro de Episódio</a></li>
+            <li><a href="cadastro-personagem.html">Cadastro de Personagem</a></li>
+            <li><a href="relacionamento.html">Relacionamentos</a></li>
+            <li><a href="search.html">Encontrar Episódios</a></li>
+            <li><button id="sair">sair</button></li>
+
+        </ul>
+    </nav>
+
+
+    <div class="container">
+
+
+        <!-- Formulário de cadastro de personagem -->
+        <h2>Cadastrar Personagem</h2>
+        <form id="characterForm">
+            <label for="name">Nome do Personagem:</label>
+            <input type="text" id="name" required>
+
+            <button type="submit">Cadastrar Personagem</button>
+        </form>
+
+    </div>
+
+    <script>
+        const sair = document.querySelector('#sair');
+        sair.addEventListener('click', async () => {
+            console.log(localStorage);
+            localStorage.clear();
+            console.log(localStorage)
+            window.location.href = "index.html"
+        })
+
+        document.getElementById("characterForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value;
+
+            const response = await fetch("/characters", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name })
+            });
+
+            const resultDiv = document.getElementById("response");
+
+            if (response.ok) {
+                const data = await response.json();
+                resultDiv.classList.add("success");
+                resultDiv.classList.remove("error");
+                resultDiv.innerHTML = `Personagem cadastrado com sucesso! ID: ${data.id}`;
+                loadOptions(); // Atualiza as opções após o cadastro
+            } else {
+                const error = await response.json();
+                resultDiv.classList.add("error");
+                resultDiv.classList.remove("success");
+                resultDiv.innerHTML = `Erro: ${error.error}`;
+            }
+        });
+
+
+    </script>
+
+</body>
+
+</html>

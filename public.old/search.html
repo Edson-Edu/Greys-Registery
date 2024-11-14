@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisar Episódios e Personagens</title>
+    <style>
+        /* Estilos globais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #2a2a2a;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 2rem;
+        }
+
+        .search-section {
+            margin-bottom: 2rem;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        label {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            color: #555;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        select {
+            background-color: #fff;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #fafafa;
+            border-radius: 5px;
+            color: #555;
+            font-size: 1rem;
+        }
+
+        /* Estilo de resultado vazio */
+        .result.empty {
+            color: #d9534f;
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            select, button {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Estilo do botão "Voltar" */
+        #backButton {
+            display: block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            text-align: center;
+            width: 100%;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        #backButton:hover {
+            background-color: #0056b3;
+        }
+
+        #sair {
+            display: block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            text-align: center;
+            width: 100%;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        #sair:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+
+<h1>Pesquisar Episódios e Personagens</h1>
+
+<div class="container">
+    <!-- Pesquisar Personagens por Episódio -->
+    <section class="search-section">
+        <h2>Pesquisar Personagens por Episódio</h2>
+        <label for="episodeSelect">Selecione um Episódio:</label>
+        <select id="episodeSelect">
+            <option value="">-- Selecione um Episódio --</option>
+        </select>
+        <button id="fetchCharacters">Buscar Personagens</button>
+        <div id="charactersResult" class="result"></div>
+    </section>
+
+    <!-- Pesquisar Episódios por Personagem -->
+    <section class="search-section">
+        <h2>Pesquisar Episódios por Personagem</h2>
+        <label for="characterSelect">Selecione um Personagem:</label>
+        <select id="characterSelect">
+            <option value="">-- Selecione um Personagem --</option>
+        </select>
+        <button id="fetchEpisodes">Buscar Episódios</button>
+        <div id="episodesResult" class="result"></div>
+    </section>
+
+    <!-- Botão para voltar à página principal -->
+    <a href="details.html" id="backButton">Voltar à Página de Cadastro</a>
+    <button id="sair">Sair</button>0
+    <a href="index.html" id="backButton">Voltar à Página Principal</a>
+</div>
+
+<script>
+    const sair = document.querySelector('#sair');
+    sair.addEventListener('click', async () => {
+        console.log(localStorage);
+        localStorage.clear();
+        console.log(localStorage)
+    })
+
+    // Carregar episódios no dropdown
+    async function loadEpisodes() {
+        const response = await fetch('/episodes');
+        const episodes = await response.json();
+        const episodeSelect = document.getElementById('episodeSelect');
+
+        episodes.forEach(episode => {
+            const option = document.createElement('option');
+            option.value = episode.id;
+            option.textContent = episode.title;
+            episodeSelect.appendChild(option);
+        });
+    }
+
+    // Carregar personagens no dropdown
+    async function loadCharacters() {
+        const response = await fetch('/characters');
+        const characters = await response.json();
+        const characterSelect = document.getElementById('characterSelect');
+
+        characters.forEach(character => {
+            const option = document.createElement('option');
+            option.value = character.id;
+            option.textContent = character.name;
+            characterSelect.appendChild(option);
+        });
+    }
+
+    // Buscar personagens pelo episódio selecionado
+    document.getElementById('fetchCharacters').addEventListener('click', async () => {
+        const episodeId = document.getElementById('episodeSelect').value;
+        if (!episodeId) return;
+
+        const response = await fetch(`/episodes/${episodeId}/characters`);
+        const characters = await response.json();
+        const charactersResult = document.getElementById('charactersResult');
+
+        charactersResult.innerHTML = ''; // Limpa resultados anteriores
+        if (characters.length === 0) {
+            charactersResult.innerHTML = 'Nenhum personagem encontrado.';
+            charactersResult.classList.add('empty');
+        } else {
+            characters.forEach(character => {
+                charactersResult.innerHTML += `<div>${character.name}</div>`;
+            });
+            charactersResult.classList.remove('empty');
+        }
+    });
+
+   
+
+    // Buscar episódios pelo personagem selecionado
+    document.getElementById('fetchEpisodes').addEventListener('click', async () => {
+        const characterId = document.getElementById('characterSelect').value;
+        if (!characterId) return;
+
+        const response = await fetch(`/characters/${characterId}/episodes`);
+        const episodes = await response.json();
+        const episodesResult = document.getElementById('episodesResult');
+
+        episodesResult.innerHTML = ''; // Limpa resultados anteriores
+        if (episodes.length === 0) {
+            episodesResult.innerHTML = 'Nenhum episódio encontrado.';
+            episodesResult.classList.add('empty');
+        } else {
+            episodes.forEach(episode => {
+                episodesResult.innerHTML += `<div>${episode.title}</div>`;
+            });
+            episodesResult.classList.remove('empty');
+        }
+    });
+    
+ 
+
+    // Carregar episódios e personagens ao iniciar
+    loadEpisodes();
+    loadCharacters();
+</script>
+
+</body>
+</html>

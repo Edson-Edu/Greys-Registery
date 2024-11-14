@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro - Grey's Anatomy</title>
+  <link rel="stylesheet" href="assets/login.css">
+</head>
+
+<body>
+
+  <div class="info">
+    <h1>Bem-vindo ao mundo de Grey's Anatomy</h1>
+    <p>Faça seu cadastro para começar a explorar todos os episódios e personagens dessa incrível jornada médica. Se você
+      é fã de Grey's Anatomy, ajude a comunidade a manter o conteúdo atualizado e acessível para todos. 🩺</p>
+  </div>
+
+  <div class="login-form">
+    <form>
+      <div>
+        <label>Nome</label>
+        <input type="text" name="name" placeholder="Digite seu nome" required>
+      </div>
+      <div>
+        <label>Email</label>
+        <input type="email" name="email" placeholder="Digite seu email" required>
+      </div>
+      <div>
+        <label>Senha</label>
+        <input type="password" name="password" placeholder="Digite sua senha" required>
+      </div>
+      <div>
+        <label>Confirmar Senha</label>
+        <input type="password" name="confirmPassword" placeholder="Digite sua senha novamente" required>
+      </div>
+      <div>
+        <button type="submit" class="unelevated" id="btCancelar">Cancelar</button>
+        <button type="submit">Cadastrar</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.querySelector('form')
+
+    const verifyMail = (email) => {
+      const regex = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/i
+      return regex.test(email)
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+
+      if (form.email.value.trim() === ''
+        || form.password.value.trim() === ''
+        || form.name.value.trim() === ''
+        || form.confirmPassword.value.trim() === ''
+      )
+        return alert('Preencha todos os campos')
+
+      if (!verifyMail(form.email.value))
+        return alert('Email inválido')
+
+      if (form.password.value !== form.confirmPassword.value)
+        return alert('As senhas não conferem')
+
+      const url = '/user'
+      const method = 'POST'
+      const headers = { 'Content-Type': 'application/json' }
+      const body = JSON.stringify({
+        name: form.name.value,
+        email: form.email.value,
+        password: form.password.value
+      })
+
+      const response = await fetch(url, { method, headers, body })
+      const dataResponse = await response.json()
+
+      if (!response.ok) {
+        console.error(dataResponse)
+        return alert('Erro de servidor ao cadastrar usuário, maiores detalhes no console!')
+      }
+
+      alert('Usuário cadastrado com sucesso! 🩺')
+      window.location.href = '/'
+    })
+
+    form.btCancelar.addEventListener('click', () => window.location.href = '/')
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Episódios e Personagens</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        form {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input, textarea, select, button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .result {
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+
+        .result.success {
+            background-color: #d5f5e3;
+            border: 1px solid #82e0aa;
+            color: #27ae60;
+        }
+
+        .result.error {
+            background-color: #f9ebea;
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+        }
+
+        .btn-link {
+            display: inline-block;
+            background-color: #3498db;
+            padding: 12px;
+            color: white;
+            text-align: center;
+            font-size: 1rem;
+            border-radius: 8px;
+            width: 100%;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-link:hover {
+            background-color: #2980b9;
+        }
+
+        #backButton {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            text-align: center;
+            display: block;
+            width: 100%;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        #backButton:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Cadastrar Episódio e Personagem</h1>
+
+    <!-- Formulário de cadastro de episódio -->
+    <h2>Cadastrar Episódio</h2>
+    <form id="episodeForm">
+        <label for="title">Título:</label>
+        <input type="text" id="title" required>
+        
+        <label for="date">Data:</label>
+        <input type="date" id="date" required>
+        
+        <label for="description">Descrição:</label>
+        <textarea id="description" required></textarea>
+        
+        <button type="submit">Cadastrar Episódio</button>
+    </form>
+
+    <!-- Formulário de cadastro de personagem -->
+    <h2>Cadastrar Personagem</h2>
+    <form id="characterForm">
+        <label for="name">Nome do Personagem:</label>
+        <input type="text" id="name" required>
+        
+        <button type="submit">Cadastrar Personagem</button>
+    </form>
+
+    <!-- Formulário para relacionar episódios e personagens -->
+    <h2>Relacionar Episódio e Personagem</h2>
+    <form id="relationForm">
+        <label for="episodeSelect">Escolha um Episódio:</label>
+        <select id="episodeSelect" required>
+            <!-- As opções serão preenchidas com JavaScript -->
+        </select>
+        
+        <label for="characterSelect">Escolha um ou mais Personagens:</label>
+        <select id="characterSelect" multiple required>
+            <!-- As opções serão preenchidas com JavaScript -->
+        </select>
+        
+        <button type="submit">Relacionar</button>
+    </form>
+
+    <!-- Caixa de resultado da operação -->
+    <div id="response" class="result"></div>
+
+    <!-- Botão para ir para a página de pesquisa -->
+    <h2>Ir para Pesquisa</h2>
+    <a href="search.html" class="btn-link">Pesquisar Episódios e Personagens</a>
+
+    <a href="acesso-privado.html" id="backButton">Voltar à Página de Usuarios</a>
+
+    <!-- Botão para voltar à página principal -->
+    <a href="index.html" id="backButton">Voltar à Página Principal</a>
+</div>
+
+<script>
+    // Código para gerenciar o cadastro e a relação
+
+    document.getElementById("episodeForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+        
+        const title = document.getElementById("title").value;
+        const date = document.getElementById("date").value;
+        const description = document.getElementById("description").value;
+
+        const response = await fetch("/episodes", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, date, description })
+        });
+
+        const resultDiv = document.getElementById("response");
+        
+        if (response.ok) {
+            const data = await response.json();
+            resultDiv.classList.add("success");
+            resultDiv.classList.remove("error");
+            resultDiv.innerHTML = `Episódio cadastrado com sucesso! ID: ${data.id}`;
+            loadOptions(); // Atualiza as opções após o cadastro
+        } else {
+            const error = await response.json();
+            resultDiv.classList.add("error");
+            resultDiv.classList.remove("success");
+            resultDiv.innerHTML = `Erro: ${error.error}`;
+        }
+    });
+
+    document.getElementById("characterForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById("name").value;
+
+        const response = await fetch("/characters", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name })
+        });
+
+        const resultDiv = document.getElementById("response");
+        
+        if (response.ok) {
+            const data = await response.json();
+            resultDiv.classList.add("success");
+            resultDiv.classList.remove("error");
+            resultDiv.innerHTML = `Personagem cadastrado com sucesso! ID: ${data.id}`;
+            loadOptions(); // Atualiza as opções após o cadastro
+        } else {
+            const error = await response.json();
+            resultDiv.classList.add("error");
+            resultDiv.classList.remove("success");
+            resultDiv.innerHTML = `Erro: ${error.error}`;
+        }
+    });
+
+    document.getElementById("relationForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+        
+        const episodeId = document.getElementById("episodeSelect").value;
+        const characterIds = Array.from(document.getElementById("characterSelect").selectedOptions).map(option => option.value);
+
+        const response = await fetch("/episode_character", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ episodeId, characterIds })
+        });
+
+        const resultDiv = document.getElementById("response");
+        
+        if (response.ok) {
+            resultDiv.classList.add("success");
+            resultDiv.classList.remove("error");
+            resultDiv.innerHTML = `Relacionamento cadastrado com sucesso!`;
+        } else {
+            const error = await response.json();
+            resultDiv.classList.add("error");
+            resultDiv.classList.remove("success");
+            resultDiv.innerHTML = `Erro: ${error.error}`;
+        }
+    });
+
+    // Preencher os selects com episódios e personagens
+    async function loadOptions() {
+        const episodeResponse = await fetch("/episodes");
+        const episodes = await episodeResponse.json();
+        const episodeSelect = document.getElementById("episodeSelect");
+        episodeSelect.innerHTML = ""; // Limpa as opções antes de adicionar
+        episodes.forEach(ep => {
+            const option = document.createElement("option");
+            option.value = ep.id;
+            option.textContent = ep.title;
+            episodeSelect.appendChild(option);
+        });
+
+        const characterResponse = await fetch("/characters");
+        const characters = await characterResponse.json();
+        const characterSelect = document.getElementById("characterSelect");
+        characterSelect.innerHTML = ""; // Limpa as opções antes de adicionar
+        characters.forEach(character => {
+            const option = document.createElement("option");
+            option.value = character.id;
+            option.textContent = character.name;
+            characterSelect.appendChild(option);
+        });
+    }
+
+    loadOptions(); // Carrega as opções ao iniciar
+</script>
+
+</body>
+</html>

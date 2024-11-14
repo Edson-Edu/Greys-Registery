@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Episódios</title>
+    <link rel="stylesheet" href="assets/main.css">
+</head>
+
+<body>
+
+    <nav>
+        <ul>
+            <li><a href="acesso-privado.html">Acesso Privado</a></li>
+            <li><a href="cadastro-episodio.html">Cadastro de Episódio</a></li>
+            <li><a href="cadastro-personagem.html">Cadastro de Personagem</a></li>
+            <li><a href="relacionamento.html">Relacionamentos</a></li>
+            <li><a href="search.html">Encontrar Episódios</a></li>
+            <li><button id="sair">sair</button></li>
+
+        </ul>
+    </nav>
+
+    <div class="container">
+        <!-- Formulário de cadastro de episódio -->
+        <h2>Cadastrar Episódio</h2>
+        <form id="episodeForm">
+            <label for="title">Título:</label>
+            <input type="text" id="title" required>
+
+            <label for="date">Data:</label>
+            <input type="date" id="date" required>
+
+            <label for="description">Descrição:</label>
+            <textarea id="description" required></textarea>
+
+            <button type="submit">Cadastrar Episódio</button>
+        </form>
+        
+        <!-- Caixa de resultado da operação -->
+        <div id="response" class="result"></div>
+    </div>
+
+    <script>
+        const sair = document.querySelector('#sair');
+        sair.addEventListener('click', async () => {
+            console.log(localStorage);
+            localStorage.clear();
+            console.log(localStorage)
+            window.location.href = "index.html"
+        })
+        // Código para gerenciar o cadastro e a relação
+
+        document.getElementById("episodeForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const title = document.getElementById("title").value;
+            const date = document.getElementById("date").value;
+            const description = document.getElementById("description").value;
+
+            const response = await fetch("/episodes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title, date, description })
+            });
+
+            const resultDiv = document.getElementById("response");
+
+            if (response.ok) {
+                const data = await response.json();
+                resultDiv.classList.add("success");
+                resultDiv.classList.remove("error");
+                resultDiv.innerHTML = `Episódio cadastrado com sucesso! ID: ${data.id}`;
+                loadOptions(); // Atualiza as opções após o cadastro
+            } else {
+                const error = await response.json();
+                resultDiv.classList.add("error");
+                resultDiv.classList.remove("success");
+                resultDiv.innerHTML = `Erro: ${error.error}`;
+            }
+        });
+
+
+
+
+        // Preencher os selects com episódios e personagens
+
+
+
+    </script>
+
+</body>
+
+</html>

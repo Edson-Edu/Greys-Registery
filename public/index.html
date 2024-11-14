@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aprendendo a Utilizar o JWT</title>
+  <link rel="stylesheet" href="assets/login.css">
+</head>
+
+<body>
+
+  <div class="info">
+    <h1>Login de Fã</h1>
+    <p>Faça login para acessar informações exclusivas sobre a série. Lembre-se: você também é um colaborador! Ajude a
+      comunidade cadastrando episódios e relacionando personagens para facilitar a busca e o compartilhamento de
+      conteúdo. 😊</p>
+  </div>
+
+
+
+  <div class="login-form">
+    <form>
+      <div>
+        <label>Email</label>
+        <input type="text" name="email" placeholder="Digite seu email" value="asd@gmail.com">
+      </div>
+      <div>
+        <label>Senha</label>
+        <input type="password" name="password" placeholder="Digite sua senha" value="asd">
+      </div>
+      <div>
+        <button type="submit" class="unelevated">recuperar senha</button>
+        <button type="submit" class="unelevated" id="btRegister">cadastra-se</button>
+        <button type="submit" id="btlogin">Entrar</button>
+      </div>
+    </form>
+  </div>
+  <script>
+    const form = document.querySelector('form')
+    form.addEventListener('submit', async e => {
+      e.preventDefault()
+
+      const response = await fetch("/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: form.email.value,
+          password: form.password.value
+        })
+      })
+
+      const responsedata = await response.json();
+      if (!response.ok) {
+        alert("error")
+        return
+      }
+      localStorage.setItem('token', responsedata.token)
+      console.log(localStorage)
+
+      window.location.href = 'acesso-privado.html';
+
+    })
+    form.btRegister.addEventListener('click', () => window.location.href = 'registrar.html')
+
+
+
+  </script>
+
+</body>
+
+</html>

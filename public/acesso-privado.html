@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Privado - Grey's Anatomy</title>
+    <link rel="stylesheet" href="assets/main.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>Bem-vindo ao Portal dos Fãs de Grey's Anatomy!</h1>
+        <p>Aqui você pode ver os outros fãs e editar seus dados. Vamos lá! 🩺</p>
+
+        <!-- Navegação -->
+        <nav>
+            <ul>
+                <li><a href="acesso-privado.html">Acesso Privado</a></li>
+                <li><a href="cadastro-episodio.html">Cadastro de Episódio</a></li>
+                <li><a href="cadastro-personagem.html">Cadastro de Personagem</a></li>
+                <li><a href="relacionamento.html">Relacionamentos</a></li>
+                <li><a href="search.html">Encontrar Episódios</a></li>
+                <li><button id="sair">sair</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dados dos usuários serão carregados aqui -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+
+        const sair = document.querySelector('#sair');
+        sair.addEventListener('click', async () => {
+            console.log(localStorage);
+            localStorage.clear();
+            console.log(localStorage)
+            window.location.href = "index.html"
+        })
+
+        const tbody = document.querySelector('tbody')
+
+        async function fetchData() {
+            const resp = await fetch('/user', {
+                headers: { Authorization: localStorage.getItem("token") }
+            })
+
+            const data = await resp.json()
+
+            if (resp.status == 401) {
+                alert("Você não está logado")
+                window.location.href = '/'
+                return
+            }
+
+            if (!resp.ok) {
+                alert("Erro ao carregar dados!")
+                return
+            }
+
+            tbody.innerHTML = ''
+
+            data.forEach(({ id, name, email }) => {
+                const tr = document.createElement('tr')
+                tr.innerHTML = `
+          <td>${id}</td>
+          <td>${name}</td>
+          <td>${email}</td>
+          <td>
+            <button class="excluir">Excluir</button>
+            <button class="editar">Editar</button>
+          </td>
+        `
+                tbody.appendChild(tr)
+
+                const btExcluir = tr.querySelector('button.excluir')
+                const btEditar = tr.querySelector('button.editar')
+                const token = localStorage.getItem('token');
+                btExcluir.addEventListener('click', async () => {
+                    const resp = await fetch(`/user/${user.id}/${token}`, { method: 'DELETE' })
+                    if (resp.status == 401) {
+                        alert("Você não tem permissão");
+                        return
+                    }
+                    tr.remove()
+                })
+            })
+        }
+
+        fetchData()
+
+        // Função para logout
+        document.getElementById('sairButton').addEventListener('click', () => {
+            localStorage.removeItem("token");
+            window.location.href = '/'; // Redireciona para a página inicial
+        });
+    </script>
+
+</body>
+
+</html>

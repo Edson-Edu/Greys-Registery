@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Episódios e Personagens</title>
+    <link rel="stylesheet" href="assets/main.css">
+</head>
+
+<body>
+    <nav>
+        <ul>
+            <li><a href="acesso-privado.html">Acesso Privado</a></li>
+            <li><a href="cadastro-episodio.html">Cadastro de Episódio</a></li>
+            <li><a href="cadastro-personagem.html">Cadastro de Personagem</a></li>
+            <li><a href="relacionamento.html">Relacionamentos</a></li>
+            <li><a href="search.html">Encontrar Episódios</a></li>
+            <li><button id="sair">sair</button></li>
+
+        </ul>
+    </nav>
+
+    <div class="container">
+
+
+        <!-- Formulário para relacionar episódios e personagens -->
+        <h2>Relacionar Episódio e Personagem</h2>
+        <form id="relationForm">
+            <label for="episodeSelect">Escolha um Episódio:</label>
+            <select id="episodeSelect" required>
+                <!-- As opções serão preenchidas com JavaScript -->
+            </select>
+
+            <label for="characterSelect">Escolha um ou mais Personagens:</label>
+            <select id="characterSelect" multiple required>
+                <!-- As opções serão preenchidas com JavaScript -->
+            </select>
+
+            <button type="submit">Relacionar</button>
+        </form>
+
+        <!-- Caixa de resultado da operação -->
+        <div id="response" class="result"></div>
+    </div>
+
+    <script>
+
+        const sair = document.querySelector('#sair');
+        sair.addEventListener('click', async () => {
+            console.log(localStorage);
+            localStorage.clear();
+            console.log(localStorage)
+            window.location.href = "index.html"
+        })
+        document.getElementById("relationForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const episodeId = document.getElementById("episodeSelect").value;
+            const characterIds = Array.from(document.getElementById("characterSelect").selectedOptions).map(option => option.value);
+
+            const response = await fetch("/episode_character", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ episodeId, characterIds })
+            });
+
+            const resultDiv = document.getElementById("response");
+
+            if (response.ok) {
+                resultDiv.classList.add("success");
+                resultDiv.classList.remove("error");
+                resultDiv.innerHTML = `Relacionamento cadastrado com sucesso!`;
+            } else {
+                const error = await response.json();
+                resultDiv.classList.add("error");
+                resultDiv.classList.remove("success");
+                resultDiv.innerHTML = `Erro: ${error.error}`;
+            }
+        });
+
+        // Preencher os selects com episódios e personagens
+        async function loadOptions() {
+            const episodeResponse = await fetch("/episodes");
+            const episodes = await episodeResponse.json();
+            const episodeSelect = document.getElementById("episodeSelect");
+            episodeSelect.innerHTML = ""; // Limpa as opções antes de adicionar
+            episodes.forEach(ep => {
+                const option = document.createElement("option");
+                option.value = ep.id;
+                option.textContent = ep.title;
+                episodeSelect.appendChild(option);
+            });
+
+            const characterResponse = await fetch("/characters");
+            const characters = await characterResponse.json();
+            const characterSelect = document.getElementById("characterSelect");
+            characterSelect.innerHTML = ""; // Limpa as opções antes de adicionar
+            characters.forEach(character => {
+                const option = document.createElement("option");
+                option.value = character.id;
+                option.textContent = character.name;
+                characterSelect.appendChild(option);
+            });
+        }
+
+        loadOptions(); // Carrega as opções ao iniciar
+    </script>
+
+</body>
+
+</html>

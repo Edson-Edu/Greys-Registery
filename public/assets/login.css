@@ -1,0 +1,125 @@
+* {
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f5; /* Fundo mais claro */
+}
+
+.info {
+  width: 45%;
+  background-color: #2f2f2f; /* Cinza escuro */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  border-radius: 10px 0 0 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.info h1 {
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+  text-align: center;
+  color: #00b5e2; /* Azul suave, lembra o tom de saúde */
+}
+
+.info p {
+  font-size: 1rem;
+  line-height: 1.6;
+  text-align: center;
+  color: #e1e1e1;
+}
+
+.login-form {
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 0 10px 10px 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-form h2 {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  color: #333;
+}
+
+.login-form form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.login-form form label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.login-form form input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #333;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease;
+}
+
+.login-form form input:focus {
+  border-color: #00b5e2; /* Azul suave ao focar */
+  outline: none;
+}
+
+.login-form form div:last-of-type {
+  display: flex;
+  justify-content: space-between;
+}
+
+.login-form form div:last-of-type button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-form form div:last-of-type button.unelevated {
+  background-color: transparent;
+  border: 1px solid #00b5e2;
+  color: #00b5e2;
+}
+
+.login-form form div:last-of-type button.unelevated:hover {
+  background-color: #00b5e2;
+  color: white;
+}
+
+.login-form form div:last-of-type button#btlogin {
+  background-color: #00b5e2;
+  color: white;
+}
+
+.login-form form div:last-of-type button#btlogin:hover {
+  background-color: #008C8E; /* Azul escuro para o hover */
+}
